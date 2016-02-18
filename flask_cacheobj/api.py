@@ -19,7 +19,7 @@ except ImportError:
 from .cache import cache_obj, cache_hash, cache_list, cache_counter
 
 class FlaskCacheOBJ(object):
-    """Init redis as cache layer for Flask applications.
+    """Use redis as cache layer for Flask applications.
 
     Register it with::
 
