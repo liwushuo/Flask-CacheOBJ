@@ -43,11 +43,11 @@ class MsgpackableMeta(type):
         if not getattr(cls, '_msgpack_key', None):
             cls._msgpack_key = '%s.%s' % (cls.__module__, cls.__name__)
         if cls._msgpack_key in _msgpackable_registry:
-            raise TypeError, '_msgpack_key "%s" has conflicts: %s, %s' % (
+            raise TypeError('_msgpack_key "%s" has conflicts: %s, %s' % (
                 cls._msgpack_key,
                 _msgpackable_registry[cls._msgpack_key],
                 cls
-            )
+            ))
         _msgpackable_registry[cls._msgpack_key] = cls
 
 
@@ -151,7 +151,7 @@ def msgpack_decode(obj):
         if type_key == MSGPACK_TYPE_DATE:
             return datetime.date.fromordinal(value)
         if type_key not in _msgpackable_registry:
-            raise MsgpackMisconfiguredError, 'missing type: %s' % type_key
+            raise MsgpackMisconfiguredError('missing type: %s' % type_key)
         classtype = _msgpackable_registry[type_key]
         return classtype._msgpack_unpack_me(value)
 
