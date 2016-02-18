@@ -109,7 +109,7 @@ class FlaskCacheOBJ(object):
                 'expire': 86400,
             }
 
-            @cache.delete_obj(ITEM)
+            @cache.delete(ITEM)
             def update_item(item_id, attributes):
                 return Item.query.get(item_id).update(**attributes)
         """
