@@ -74,7 +74,7 @@ To cache object you will use the `cache.obj` decorator::
 
     @cache.obj(ITEM)
     def get_item(item_id):
-        return Item.query.get(item_id)
+        return to_dict(Item.query.get(item_id))
 
 Cache Counter
 -------------
@@ -83,7 +83,7 @@ To cache counter you will use the `cache.counter` decorator::
 
     @cache.counter(ITEM_STAT)
     def get_item_stat(item_id):
-        return ItemStat.query.get(item_id)
+        return to_dict(ItemStat.query.get(item_id))
 
 Cache List
 ----------
@@ -92,7 +92,7 @@ To cache list you will use the `cache.list` decorator::
 
     @cache.counter(ITEM_LIST)
     def get_item_list(item_list_id):
-        return ItemList.query.filter_by(item_list_id=item_list_id).all()
+        return map(to_dict, ItemList.query.filter_by(item_list_id=item_list_id).all())
 
 Cache Hash
 ----------
@@ -101,4 +101,4 @@ To cache hash you will use the `cache.hash` decorator::
 
     @cache.counter(ITEM_HASH)
     def get_item(item_id):
-        return Item.query.get(item_id)
+        return to_dict(Item.query.get(item_id))

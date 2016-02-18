@@ -95,7 +95,7 @@ class FlaskCacheOBJ(object):
 
             @cache.obj(ITEM)
             def get_item(item_id):
-                return Item.query.get(item_id)
+                return to_dict(Item.query.get(item_id))
         """
         return cache_obj(*args, **kwargs)
 
@@ -127,7 +127,7 @@ class FlaskCacheOBJ(object):
 
             @cache.counter(STAT)
             def get_item_stat(item_id):
-                return ItemStat.query.filter_by(item_id).first()
+                return to_dict(ItemStat.query.filter_by(item_id).first())
         """
         return cache_counter(*args, **kwargs)
 
@@ -161,6 +161,6 @@ class FlaskCacheOBJ(object):
 
             @cache.obj(ITEM)
             def get_item(item_id):
-                return Item.query.get(item_id)
+                return to_dict(Item.query.get(item_id))
         """
         return cache_hash(*args, **kwargs)
