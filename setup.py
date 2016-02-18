@@ -6,7 +6,7 @@ from setuptools import setup
 
 setup(
     name='Flask-CacheOBJ',
-    version='0.1.1',
+    version='0.1.2',
     url='https://github.com/liwushuo/Flask-CacheOBJ',
     license='MIT',
     author='Ju Lin',
