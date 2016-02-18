@@ -89,6 +89,29 @@ def cache_obj(cache_key_reg, packer=encode, unpacker=decode):
         return _
     return deco
 
+def delete_obj(cache_key_reg):
+    """Delete object cache
+
+    :param cache_key_reg: a dict-like object contains 'key'.
+    """
+    def deco(f):
+        key_pattern = cache_key_reg.get('key')
+        arg_names, varargs, varkw, defaults = inspect.getargspec(f)
+        if varargs or varkw:
+            raise Exception("do not support varargs")
+        gen_key = gen_key_factory(key_pattern, arg_names, defaults)
+        @wraps(f)
+        def _(*a, **kw):
+            key, _ = gen_key(*a, **kw)
+            if not key:
+                return f(*a, **kw)
+            if isinstance(key, text_type):
+                key = key.encode("utf8")
+            ret = f(*a, **kw)
+            mc.delete(key)
+            return ret
+        return _
+    return deco
 
 def delete_cache(cache_key_reg, **kw):
     """Delete cache via cache key registry.
