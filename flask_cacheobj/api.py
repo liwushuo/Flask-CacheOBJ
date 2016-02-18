@@ -17,6 +17,7 @@ except ImportError:
     from flask import _request_ctx_stack as stack
 
 from .cache import cache_obj, cache_hash, cache_list, cache_counter
+from .consts import __flask_extension_name__
 
 class FlaskCacheOBJ(object):
     """Use redis as cache layer for Flask applications.
@@ -47,7 +48,7 @@ class FlaskCacheOBJ(object):
         if not hasattr(app, 'extensions'):
             app.extensions = {}
 
-        app.extensions.setdefault('cacheobj', self)
+        app.extensions.setdefault(__flask_extension_name__, self)
 
     def init_redis(self):
         host = current_app.config.get('CACHE_HOST')

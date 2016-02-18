@@ -38,5 +38,4 @@ from .cache import (
     get_counter,
     set_counter,
 )
-
-__version__ = '0.1.1'
+from .consts import __version__
