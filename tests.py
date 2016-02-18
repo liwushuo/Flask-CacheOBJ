@@ -32,6 +32,8 @@ def test_mc_initialized(cache):
 
 class Obj(Msgpackable):
 
+    _msgpack_key = 'CacheOBJ'
+
     def __init__(self, id):
         self.id = id
 
