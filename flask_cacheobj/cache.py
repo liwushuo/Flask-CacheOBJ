@@ -18,6 +18,7 @@ import msgpack
 from .msgpackable import encode, decode
 from .format import format_key_pattern
 from .proxy import mc
+from ._compat import text_type
 
 logger = logging.getLogger('flask.cache')
 
@@ -69,7 +70,7 @@ def cache_obj(cache_key_reg, packer=encode, unpacker=decode):
             key, args = gen_key(*a, **kw)
             if not key:
                 return f(*a, **kw)
-            if isinstance(key, unicode):
+            if isinstance(key, text_type):
                 key = key.encode("utf8")
             r = mc.get(key)
 
@@ -127,7 +128,7 @@ def cache_hash(cache_key_reg, packer=encode, unpacker=decode):
             key, args = gen_key(*a, **kw)
             if not key:
                 return f(*a, **kw)
-            if isinstance(key, unicode):
+            if isinstance(key, text_type):
                 key = key.encode('utf8')
             r = mc.hget(hash_key, key)
             if r is not None:
@@ -170,7 +171,7 @@ def cache_list(cache_key_reg):
             key, args = gen_key(*a, **kw)
             if not key:
                 return f(*a, **kw)
-            if isinstance(key, unicode):
+            if isinstance(key, text_type):
                 key = key.encode("utf8")
             r = mc.smembers(key)
             r = [int(rv) for rv in r]
@@ -269,7 +270,7 @@ def cache_counter(cache_key_reg):
             key, args = gen_key(*a, **kw)
             if not key:
                 return f(*a, **kw)
-            if isinstance(key, unicode):
+            if isinstance(key, text_type):
                 key = key.encode("utf8")
             r = mc.get(key)
 
