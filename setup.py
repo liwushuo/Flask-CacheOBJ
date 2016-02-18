@@ -20,6 +20,10 @@ setup(
     platforms='any',
     install_requires=[
         'Flask',
+        'python-dateutil',
+        'pytz',
+        'msgpack-python',
+        'redis',
     ],
     classifiers=[
         'Framework :: Flask',
