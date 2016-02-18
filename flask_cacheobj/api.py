@@ -29,7 +29,7 @@ class FlaskCacheOBJ(object):
     Or::
 
         app = Flask(__name__)
-        cache = FlaskCache()
+        cache = FlaskCacheOBJ()
         cache.init_app(app)
     """
 
@@ -47,7 +47,7 @@ class FlaskCacheOBJ(object):
         if not hasattr(app, 'extensions'):
             app.extensions = {}
 
-        app.extensions.setdefault('cache', self)
+        app.extensions.setdefault('cacheobj', self)
 
     def init_redis(self):
         host = current_app.config.get('CACHE_HOST')
