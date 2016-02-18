@@ -16,7 +16,7 @@ try:
 except ImportError:
     from flask import _request_ctx_stack as stack
 
-from .cache import cache_obj, cache_hash, cache_list, cache_counter
+from .cache import cache_obj, cache_hash, cache_list, cache_counter, delete_obj
 from .consts import __flask_extension_name__
 
 class FlaskCacheOBJ(object):
@@ -98,6 +98,22 @@ class FlaskCacheOBJ(object):
                 return Item.query.get(item_id)
         """
         return cache_obj(*args, **kwargs)
+
+    def delete_obj(self, *args, **kwargs):
+        """A decorator that can delete object after function executed. Alias for `flask_cacheobj.cache.delete_obj`.
+
+        Define cache strategy and decorate your function::
+
+            ITEM = {
+                'key': 'item:{item_id}',
+                'expire': 86400,
+            }
+
+            @cache.delete_obj(ITEM)
+            def update_item(item_id, attributes):
+                return Item.query.get(item_id).update(**attributes)
+        """
+        return delete_obj(*args, **kwargs)
 
     def counter(self, *args, **kwargs):
         """A decorator that can cache counter. Alias for `flask_cacheobj.cache.cache_counter`.
