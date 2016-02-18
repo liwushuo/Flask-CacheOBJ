@@ -1,6 +1,6 @@
-# Flask-Cache
+# Flask-CacheOBJ
 
-Flask-Cache provides some caching decorators
+Flask-CacheOBJ provides some caching decorators
 
 ![Build Status](https://api.travis-ci.org/liwushuo/Flask-CacheOBJ.svg)
 
