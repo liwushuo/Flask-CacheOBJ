@@ -1,20 +1,19 @@
 """
-Flask-Cache provides some caching decorators
+Flask-CacheOBJ provides some caching decorators
 """
 
 from setuptools import setup
 
-
 setup(
-    name='Flask-Cache',
+    name='Flask-CacheOBJ',
     version='0.0.1',
-    url='https://ghe.liwushuo.com/flask-extensions/Flask-Cache',
+    url='https://github.com/liwushuo/Flask-CacheOBJ',
     license='MIT',
     author='Ju Lin',
     author_email='soasme@gmail.com',
-    description='Flask-Cache provides some caching decorators',
+    description='Flask-CacheOBJ provides some caching decorators',
     long_description=__doc__,
-    packages=['flask_cache'],
+    packages=['flask_cacheobj'],
     zip_safe=False,
     include_package_data=True,
     platforms='any',
