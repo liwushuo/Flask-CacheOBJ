@@ -73,3 +73,15 @@ def test_cache_counter(cache):
     assert get(1)
     assert int(cache.mc.get('test_cache_counter:1'))
     assert get(1)
+
+def test_cache_delete(cache):
+    @cache.counter({'key': 'test_cache_counter:{id}', 'expire': 1})
+    def get(id):
+        return int(id)
+    @cache.delete({'key': 'test_cache_counter:{id}'})
+    def update(id):
+        return int(id)
+    get(1)
+    assert int(cache.mc.get('test_cache_counter:1'))
+    assert update(1)
+    assert not cache.mc.get('test_cache_counter:1')
