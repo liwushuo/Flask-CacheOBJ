@@ -18,7 +18,7 @@ import msgpack
 from .msgpackable import encode, decode
 from .format import format_key_pattern
 from .proxy import mc
-from ._compat import text_type
+from ._compat import text_type, integer_types
 
 logger = logging.getLogger('flask.cache')
 
@@ -277,7 +277,7 @@ def cache_counter(cache_key_reg):
             if r is None:
                 r = f(*a, **kw)
                 if r is not None:
-                    if not isinstance(r, (int, long)):
+                    if not isinstance(r, integer_types):
                         raise Exception("Only support cache counters!")
                     mc.set(key, r, expire)
             else:

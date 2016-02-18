@@ -1,10 +1,12 @@
 import sys
 if sys.version_info[0] == 3:
     text_type = str
-    string_types = (str,)
+    string_types = (str, )
+    integer_types = (int, )
 else:
     text_type = unicode
-    string_types = (str, unicode)
+    string_types = (str, unicode, )
+    integer_types = (int, long, )
 
 
 def to_bytes(text):
