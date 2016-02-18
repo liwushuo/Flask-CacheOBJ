@@ -99,7 +99,7 @@ class FlaskCacheOBJ(object):
         """
         return cache_obj(*args, **kwargs)
 
-    def delete_obj(self, *args, **kwargs):
+    def delete(self, *args, **kwargs):
         """A decorator that can delete object after function executed. Alias for `flask_cacheobj.cache.delete_obj`.
 
         Define cache strategy and decorate your function::
