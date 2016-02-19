@@ -141,7 +141,7 @@ class FlaskCacheOBJ(object):
                 'expire': 60,
             }
 
-            @cache.counter(STAT)
+            @cache.list(STAT)
             def get_item_members(item_id):
                 members = ItemMember.query.filter_by(item_id).all()
                 return [member.user_id for member in members]
@@ -159,7 +159,7 @@ class FlaskCacheOBJ(object):
                 'expire': 86400,
             }
 
-            @cache.obj(ITEM)
+            @cache.hash(ITEM)
             def get_item(item_id):
                 return to_dict(Item.query.get(item_id))
         """
