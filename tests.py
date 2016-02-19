@@ -5,6 +5,7 @@ import fakeredis
 
 from flask import Flask
 from flask.ext.cacheobj import FlaskCacheOBJ, Msgpackable
+from flask.ext.cacheobj import set_counter, get_counter, dec_counter, inc_counter
 
 app = Flask(__name__)
 cache = FlaskCacheOBJ()
@@ -85,3 +86,20 @@ def test_cache_delete(cache):
     assert int(cache.mc.get('test_cache_counter:1'))
     assert update(1)
     assert not cache.mc.get('test_cache_counter:1')
+
+def test_set_counter(cache):
+    pattern = dict(key='test_set_counter:{id}')
+    set_counter(pattern, 0, id=1)
+    assert get_counter(pattern, id=1) == 0
+
+def test_inc_counter(cache):
+    pattern = dict(key='test_inc_counter:{id}')
+    set_counter(pattern, 0, id=1)
+    inc_counter(pattern, delta=10, id=1)
+    assert get_counter(pattern, id=1) == 10
+
+def test_dec_counter(cache):
+    pattern = dict(key='test_dec_counter:{id}')
+    set_counter(pattern, 10, id=1)
+    dec_counter(pattern, delta=10, id=1)
+    assert get_counter(pattern, id=1) == 0
