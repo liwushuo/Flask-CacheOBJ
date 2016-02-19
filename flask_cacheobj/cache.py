@@ -121,7 +121,7 @@ def delete_cache(cache_key_reg, **kw):
         delete_cache({'key': 'item:{item_id}'}, item_id=1)
     """
     key_pattern = cache_key_reg.get('key')
-    key = format(key_pattern, **kw)
+    key = format_key_pattern(key_pattern, **kw)
 
     mc.delete(key)
     logger.info('Cache delete - %s', key)
@@ -177,7 +177,7 @@ def hash_del(cache_key_reg, **kw):
     """
     hash_key = cache_key_reg.get('hash_key')
     key_pattern = cache_key_reg.get('key')
-    key = format(key_pattern, **kw)
+    key = format_key_pattern(key_pattern, **kw)
     mc.hdel(hash_key, key)
 
 
@@ -217,7 +217,7 @@ def cache_list(cache_key_reg):
 def list_add(cache_key_reg, value, **kw):
     key_pattern = cache_key_reg.get('key')
     expire = cache_key_reg.get('expire', None)
-    key = format(key_pattern, **kw)
+    key = format_key_pattern(key_pattern, **kw)
 
     mc.sadd(key, value)
 
@@ -225,7 +225,7 @@ def list_add(cache_key_reg, value, **kw):
 def list_rem(cache_key_reg, value, **kw):
     key_pattern = cache_key_reg.get('key')
     expire = cache_key_reg.get('expire', None)
-    key = format(key_pattern, **kw)
+    key = format_key_pattern(key_pattern, **kw)
 
     mc.srem(key, value)
 
@@ -233,7 +233,7 @@ def list_rem(cache_key_reg, value, **kw):
 def list_len(cache_key_reg, **kw):
     key_pattern = cache_key_reg.get('key')
     expire = cache_key_reg.get('expire', None)
-    key = format(key_pattern, **kw)
+    key = format_key_pattern(key_pattern, **kw)
 
     return mc.scard(key)
 
@@ -241,7 +241,7 @@ def list_len(cache_key_reg, **kw):
 def exists(cache_key_reg, **kw):
     key_pattern = cache_key_reg.get('key')
     expire = cache_key_reg.get('expire', None)
-    key = format(key_pattern, **kw)
+    key = format_key_pattern(key_pattern, **kw)
 
     return mc.exists(key)
 
@@ -249,7 +249,7 @@ def exists(cache_key_reg, **kw):
 def set_add(cache_key_reg, value, **kw):
     key_pattern = cache_key_reg.get('key')
     expire = cache_key_reg.get('expire', None)
-    key = format(key_pattern, **kw)
+    key = format_key_pattern(key_pattern, **kw)
 
     return mc.sadd(key, value)
 
@@ -257,7 +257,7 @@ def set_add(cache_key_reg, value, **kw):
 def set_rem(cache_key_reg, value, **kw):
     key_pattern = cache_key_reg.get('key')
     expire = cache_key_reg.get('expire', None)
-    key = format(key_pattern, **kw)
+    key = format_key_pattern(key_pattern, **kw)
 
     return mc.srem(key, value)
 
@@ -265,7 +265,7 @@ def set_rem(cache_key_reg, value, **kw):
 def set_len(cache_key_reg, **kw):
     key_pattern = cache_key_reg.get('key')
     expire = cache_key_reg.get('expire', None)
-    key = format(key_pattern, **kw)
+    key = format_key_pattern(key_pattern, **kw)
 
     return mc.scard(key)
 
@@ -321,9 +321,9 @@ def inc_counter(cache_key_reg, delta=1, **kw):
     :param kw: A dict of named parameters used to format `cache_key_reg['key']`.
     """
     key_pattern = cache_key_reg.get('key')
-    key = format(key_pattern, **kw)
+    key = format_key_pattern(key_pattern, **kw)
 
-    mc.inc(key, delta)
+    mc.incr(key, delta)
 
 
 def dec_counter(cache_key_reg, delta=1, **kw):
@@ -334,9 +334,9 @@ def dec_counter(cache_key_reg, delta=1, **kw):
     :param kw: A dict of named parameters used to format `cache_key_reg['key']`.
     """
     key_pattern = cache_key_reg.get('key')
-    key = format(key_pattern, **kw)
+    key = format_key_pattern(key_pattern, **kw)
 
-    mc.dec(key, delta)
+    mc.decr(key, delta)
 
 
 def get_counter(cache_key_reg, **kw):
@@ -346,9 +346,9 @@ def get_counter(cache_key_reg, **kw):
     :param kw: A dict of named parameters used to format `cache_key_reg['key']`.
     """
     key_pattern = cache_key_reg.get('key')
-    key = format(key_pattern, **kw)
+    key = format_key_pattern(key_pattern, **kw)
 
-    return mc.get(key)
+    return int(mc.get(key) or 0)
 
 def set_counter(cache_key_reg, value=0, **kw):
     """Set counter value.
@@ -358,6 +358,6 @@ def set_counter(cache_key_reg, value=0, **kw):
     :param kw: A dict of named parameters used to format `cache_key_reg['key']`.
     """
     key_pattern = cache_key_reg.get('key')
-    key = format(key_pattern, **kw)
+    key = format_key_pattern(key_pattern, **kw)
 
     return mc.set(key, value)
