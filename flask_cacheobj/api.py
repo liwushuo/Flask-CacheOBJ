@@ -83,7 +83,8 @@ class FlaskCacheOBJ(object):
         if ctx is not None:
             ctx.cache_redis = value
 
-    def obj(self, *args, **kwargs):
+    @property
+    def obj(self):
         """A decorator that can cache object. Alias for `flask_cacheobj.cache.cache_obj`.
 
         Define cache strategy and decorate your function::
@@ -97,9 +98,10 @@ class FlaskCacheOBJ(object):
             def get_item(item_id):
                 return to_dict(Item.query.get(item_id))
         """
-        return cache_obj(*args, **kwargs)
+        return cache_obj
 
-    def delete(self, *args, **kwargs):
+    @property
+    def delete(self):
         """A decorator that can delete object after function executed. Alias for `flask_cacheobj.cache.delete_obj`.
 
         Define cache strategy and decorate your function::
@@ -113,9 +115,10 @@ class FlaskCacheOBJ(object):
             def update_item(item_id, attributes):
                 return Item.query.get(item_id).update(**attributes)
         """
-        return delete_obj(*args, **kwargs)
+        return delete_obj
 
-    def counter(self, *args, **kwargs):
+    @property
+    def counter(self):
         """A decorator that can cache counter. Alias for `flask_cacheobj.cache.cache_counter`.
 
         Define counter cache strategy and decorator your function::
@@ -129,9 +132,10 @@ class FlaskCacheOBJ(object):
             def get_item_stat(item_id):
                 return to_dict(ItemStat.query.filter_by(item_id).first())
         """
-        return cache_counter(*args, **kwargs)
+        return cache_counter
 
-    def list(self, *args, **kwargs):
+    @property
+    def list(self):
         """A decorator that can cache list. Alias for `flask_cacheobj.cache.cache_list`.
 
         Define list cache strategy and decorator your function::
@@ -146,9 +150,10 @@ class FlaskCacheOBJ(object):
                 members = ItemMember.query.filter_by(item_id).all()
                 return [member.user_id for member in members]
         """
-        return cache_list(*args, **kwargs)
+        return cache_list
 
-    def hash(self, *args, **kwargs):
+    @property
+    def hash(self):
         """A decorator that can cache hash. Alias for `flask_cacheobj.cache.cache_hash`.
 
         Define hash cache strategy and decorator your function::
@@ -163,4 +168,4 @@ class FlaskCacheOBJ(object):
             def get_item(item_id):
                 return to_dict(Item.query.get(item_id))
         """
-        return cache_hash(*args, **kwargs)
+        return cache_hash
