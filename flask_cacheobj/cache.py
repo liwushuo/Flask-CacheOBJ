@@ -14,6 +14,7 @@ import logging
 from functools import wraps
 
 import msgpack
+from decorator import decorator
 
 from .msgpackable import encode, decode
 from .format import format_key_pattern
@@ -58,35 +59,34 @@ def cache_obj(cache_key_reg, packer=encode, unpacker=decode):
     :param packer: a method used to encode function result.
     :param unpacker: a callable object used to decode msgpack data.
     """
-    def deco(f):
+    @decorator
+    def deco(f, *a, **kw):
         key_pattern = cache_key_reg.get('key')
         expire = cache_key_reg.get('expire', None)
         arg_names, varargs, varkw, defaults = inspect.getargspec(f)
         if varargs or varkw:
             raise Exception("do not support varargs")
         gen_key = gen_key_factory(key_pattern, arg_names, defaults)
-        @wraps(f)
-        def _(*a, **kw):
-            key, args = gen_key(*a, **kw)
-            if not key:
-                return f(*a, **kw)
-            if isinstance(key, text_type):
-                key = key.encode("utf8")
-            r = mc.get(key)
 
-            r = unpacker(r) if r else None
+        key, args = gen_key(*a, **kw)
+        if not key:
+            return f(*a, **kw)
+        if isinstance(key, text_type):
+            key = key.encode("utf8")
+        r = mc.get(key)
 
-            # set cache
-            if r is None:
-                r = f(*a, **kw)
-                if r is not None:
-                    mc.set(key, packer(r), expire)
-            else:
-                logger.info('Cache read - %s',key)
+        r = unpacker(r) if r else None
 
-            return r
-        _.original_function = f
-        return _
+        # set cache
+        if r is None:
+            r = f(*a, **kw)
+            if r is not None:
+                mc.set(key, packer(r), expire)
+        else:
+            logger.info('Cache read - %s',key)
+
+        return r
+
     return deco
 
 def delete_obj(cache_key_reg):
@@ -94,23 +94,23 @@ def delete_obj(cache_key_reg):
 
     :param cache_key_reg: a dict-like object contains 'key'.
     """
-    def deco(f):
+    @decorator
+    def deco(f, *a, **kw):
         key_pattern = cache_key_reg.get('key')
         arg_names, varargs, varkw, defaults = inspect.getargspec(f)
         if varargs or varkw:
             raise Exception("do not support varargs")
         gen_key = gen_key_factory(key_pattern, arg_names, defaults)
-        @wraps(f)
-        def _(*a, **kw):
-            key, _ = gen_key(*a, **kw)
-            if not key:
-                return f(*a, **kw)
-            if isinstance(key, text_type):
-                key = key.encode("utf8")
-            ret = f(*a, **kw)
-            mc.delete(key)
-            return ret
-        return _
+
+        key, _ = gen_key(*a, **kw)
+        if not key:
+            return f(*a, **kw)
+        if isinstance(key, text_type):
+            key = key.encode("utf8")
+        ret = f(*a, **kw)
+        mc.delete(key)
+        return ret
+
     return deco
 
 def delete_cache(cache_key_reg, **kw):
@@ -137,7 +137,8 @@ def cache_hash(cache_key_reg, packer=encode, unpacker=decode):
 
     :param cache_key_reg: a dict-like object contains `hash_key`, `key`. `hash_key` is a string as redis hash key. `key` is a template string or a callable object as hash field key.
     """
-    def deco(f):
+    @decorator
+    def deco(f, *a, **kw):
         hash_key = cache_key_reg.get('hash_key')
         key = cache_key_reg.get('key')
         expire = cache_key_reg.get('expire', None)
@@ -146,25 +147,22 @@ def cache_hash(cache_key_reg, packer=encode, unpacker=decode):
             raise Exception('do not support varargs')
         gen_key = gen_key_factory(key, arg_names, defaults)
 
-        @wraps(f)
-        def _(*a, **kw):
-            key, args = gen_key(*a, **kw)
-            if not key:
-                return f(*a, **kw)
-            if isinstance(key, text_type):
-                key = key.encode('utf8')
-            r = mc.hget(hash_key, key)
-            if r is not None:
-                logger.info('HashCache read - %s - %s', hash_key, key)
-                return unpacker(r) if r else None
+        key, args = gen_key(*a, **kw)
+        if not key:
+            return f(*a, **kw)
+        if isinstance(key, text_type):
+            key = key.encode('utf8')
+        r = mc.hget(hash_key, key)
+        if r is not None:
+            logger.info('HashCache read - %s - %s', hash_key, key)
+            return unpacker(r) if r else None
 
-            r = f(*a, **kw)
-            if r is None:
-                return r
-            mc.hset(hash_key, key, packer(r))
+        r = f(*a, **kw)
+        if r is None:
             return r
-        _.original_func = f
-        return _
+        mc.hset(hash_key, key, packer(r))
+        return r
+
     return deco
 
 
@@ -182,35 +180,34 @@ def hash_del(cache_key_reg, **kw):
 
 
 def cache_list(cache_key_reg):
-    def deco(f):
+    @decorator
+    def deco(f, *a, **kw):
         key_pattern = cache_key_reg.get('key')
         expire = cache_key_reg.get('expire', None)
         arg_names, varargs, varkw, defaults = inspect.getargspec(f)
         if varargs or varkw:
             raise Exception("do not support varargs")
         gen_key = gen_key_factory(key_pattern, arg_names, defaults)
-        @wraps(f)
-        def _(*a, **kw):
-            key, args = gen_key(*a, **kw)
-            if not key:
-                return f(*a, **kw)
-            if isinstance(key, text_type):
-                key = key.encode("utf8")
-            r = mc.smembers(key)
-            r = [int(rv) for rv in r]
 
-            # set cache
-            if not r:
-                r = f(*a, **kw)
-                if r:
-                    mc.delete(key)
-                    mc.sadd(key, *r)
-            else:
-                logger.info('Cache read - %s', key)
+        key, args = gen_key(*a, **kw)
+        if not key:
+            return f(*a, **kw)
+        if isinstance(key, text_type):
+            key = key.encode("utf8")
+        r = mc.smembers(key)
+        r = [int(rv) for rv in r]
 
-            return r
-        _.original_function = f
-        return _
+        # set cache
+        if not r:
+            r = f(*a, **kw)
+            if r:
+                mc.delete(key)
+                mc.sadd(key, *r)
+        else:
+            logger.info('Cache read - %s', key)
+
+        return r
+
     return deco
 
 
@@ -281,36 +278,33 @@ def cache_counter(cache_key_reg):
 
     :param cache_key_reg: a dict-like object contains `key` and `expire`.
     """
-    def deco(f):
+    @decorator
+    def deco(f, *a, **kw):
         key_pattern = cache_key_reg.get('key')
         expire = cache_key_reg.get('expire', None)
         arg_names, varargs, varkw, defaults = inspect.getargspec(f)
         if varargs or varkw:
             raise Exception("do not support varargs")
         gen_key = gen_key_factory(key_pattern, arg_names, defaults)
-        @wraps(f)
-        def _(*a, **kw):
-            key, args = gen_key(*a, **kw)
-            if not key:
-                return f(*a, **kw)
-            if isinstance(key, text_type):
-                key = key.encode("utf8")
-            r = mc.get(key)
 
-            if r is None:
-                r = f(*a, **kw)
-                if r is not None:
-                    if not isinstance(r, integer_types):
-                        raise Exception("Only support cache counters!")
-                    mc.set(key, r, expire)
-            else:
-                logger.info('Counter cache read - %s', key)
+        key, args = gen_key(*a, **kw)
+        if not key:
+            return f(*a, **kw)
+        if isinstance(key, text_type):
+            key = key.encode("utf8")
+        r = mc.get(key)
 
-            return int(r)
-        _.original_function = f
-        _.cache_key_reg = cache_key_reg
-        _.transform = int
-        return _
+        if r is None:
+            r = f(*a, **kw)
+            if r is not None:
+                if not isinstance(r, integer_types):
+                    raise Exception("Only support cache counters!")
+                mc.set(key, r, expire)
+        else:
+            logger.info('Counter cache read - %s', key)
+
+        return int(r)
+
     return deco
 
 def inc_counter(cache_key_reg, delta=1, **kw):

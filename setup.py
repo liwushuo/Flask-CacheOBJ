@@ -23,6 +23,7 @@ setup(
         'pytz',
         'msgpack-python',
         'redis',
+        'decorator',
     ],
     classifiers=[
         'Framework :: Flask',
