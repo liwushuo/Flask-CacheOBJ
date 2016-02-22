@@ -1,1 +1,1 @@
-recursive-include flask_cache *.py *.html *.css *.js *.pot *.mo *.po
+recursive-include flask_cacheobj *.py *.html *.css *.js *.pot *.mo *.po
