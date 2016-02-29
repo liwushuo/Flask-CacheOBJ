@@ -14,11 +14,12 @@ import logging
 from functools import wraps
 
 import msgpack
-from decorator import decorator
+from decorator import decorator, decorate
 
 from .msgpackable import encode, decode
 from .format import format_key_pattern
 from .proxy import mc
+from .utils import make_deco
 from ._compat import text_type, integer_types
 
 logger = logging.getLogger('flask.cache')
@@ -37,6 +38,7 @@ def gen_key_factory(key_pattern, arg_names, defaults):
             key = format_key_pattern(key_pattern, *[aa[n] for n in arg_names], **aa)
         return key and key.replace(' ','_'), aa
     return gen_key
+
 
 def cache_obj(cache_key_reg, packer=encode, unpacker=decode):
     """A decorator that can cache function result.
@@ -59,7 +61,7 @@ def cache_obj(cache_key_reg, packer=encode, unpacker=decode):
     :param packer: a method used to encode function result.
     :param unpacker: a callable object used to decode msgpack data.
     """
-    @decorator
+
     def deco(f, *a, **kw):
         key_pattern = cache_key_reg.get('key')
         expire = cache_key_reg.get('expire', None)
@@ -87,11 +89,12 @@ def cache_obj(cache_key_reg, packer=encode, unpacker=decode):
 
         return r
 
-    deco.cache_key_reg = cache_key_reg
-    deco.packer = packer
-    deco.unpacker = unpacker
-
-    return deco
+    return make_deco(
+        deco,
+        cache_key_reg=cache_key_reg,
+        packer=packer,
+        unpacker=unpacker,
+    )
 
 
 def delete_obj(cache_key_reg):
@@ -99,7 +102,7 @@ def delete_obj(cache_key_reg):
 
     :param cache_key_reg: a dict-like object contains 'key'.
     """
-    @decorator
+
     def deco(f, *a, **kw):
         key_pattern = cache_key_reg.get('key')
         arg_names, varargs, varkw, defaults = inspect.getargspec(f)
@@ -116,11 +119,11 @@ def delete_obj(cache_key_reg):
         mc.delete(key)
         return ret
 
-    deco.cache_key_reg = cache_key_reg
-    deco.packer = None
-    deco.unpacker = None
+    return make_deco(
+        deco,
+        cache_key_reg=cache_key_reg,
+    )
 
-    return deco
 
 def delete_cache(cache_key_reg, **kw):
     """Delete cache via cache key registry.
@@ -146,7 +149,7 @@ def cache_hash(cache_key_reg, packer=encode, unpacker=decode):
 
     :param cache_key_reg: a dict-like object contains `hash_key`, `key`. `hash_key` is a string as redis hash key. `key` is a template string or a callable object as hash field key.
     """
-    @decorator
+
     def deco(f, *a, **kw):
         hash_key = cache_key_reg.get('hash_key')
         key = cache_key_reg.get('key')
@@ -172,11 +175,12 @@ def cache_hash(cache_key_reg, packer=encode, unpacker=decode):
         mc.hset(hash_key, key, packer(r))
         return r
 
-    deco.cache_key_reg = cache_key_reg
-    deco.packer = packer
-    deco.unpacker = unpacker
-
-    return deco
+    return make_deco(
+        deco,
+        cache_key_reg=cache_key_reg,
+        packer=packer,
+        unpacker=unpacker,
+    )
 
 
 def hash_del(cache_key_reg, **kw):
@@ -193,7 +197,7 @@ def hash_del(cache_key_reg, **kw):
 
 
 def cache_list(cache_key_reg, packer=str, unpacker=int):
-    @decorator
+
     def deco(f, *a, **kw):
         key_pattern = cache_key_reg.get('key')
         expire = cache_key_reg.get('expire', None)
@@ -221,11 +225,13 @@ def cache_list(cache_key_reg, packer=str, unpacker=int):
 
         return r
 
-    deco.cache_key_reg = cache_key_reg
-    deco.unpacker = unpacker
-    deco.packer = packer
+    return make_deco(
+        deco,
+        cache_key_reg=cache_key_reg,
+        packer=packer,
+        unpacker=unpacker,
+    )
 
-    return deco
 
 
 def list_add(cache_key_reg, value, **kw):
@@ -295,7 +301,7 @@ def cache_counter(cache_key_reg, packer=str, unpacker=int):
 
     :param cache_key_reg: a dict-like object contains `key` and `expire`.
     """
-    @decorator
+
     def deco(f, *a, **kw):
         key_pattern = cache_key_reg.get('key')
         expire = cache_key_reg.get('expire', None)
@@ -322,11 +328,13 @@ def cache_counter(cache_key_reg, packer=str, unpacker=int):
 
         return unpacker(r)
 
-    deco.cache_key_reg = cache_key_reg
-    deco.packer = packer
-    deco.unpacker = unpacker
+    return make_deco(
+        deco,
+        cache_key_reg=cache_key_reg,
+        packer=packer,
+        unpacker=unpacker,
+    )
 
-    return deco
 
 def inc_counter(cache_key_reg, delta=1, **kw):
     """Increase counter value.
