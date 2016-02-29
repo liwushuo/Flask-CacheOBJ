@@ -19,7 +19,7 @@ except ImportError:
 from .cache import cache_obj, cache_hash, cache_list, cache_counter, delete_obj
 from .consts import __flask_extension_name__
 
-class FlaskCacheOBJ(object):
+class CacheOBJ(object):
     """Use redis as cache layer for Flask applications.
 
     Register it with::

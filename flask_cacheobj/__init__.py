@@ -11,8 +11,11 @@ Flask-CacheOBJ Extension
 
 from __future__ import absolute_import
 
-from .api import FlaskCacheOBJ
+from .api import CacheOBJ
+FlaskCacheOBJ = CacheOBJ
+
 from .msgpackable import Msgpackable
+
 from .cache import (
     delete_cache,
 
