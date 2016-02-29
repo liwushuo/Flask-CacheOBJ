@@ -14,7 +14,7 @@ from __future__ import absolute_import
 from .api import CacheOBJ
 FlaskCacheOBJ = CacheOBJ
 
-from .msgpackable import Msgpackable
+from .msgpackable import Msgpackable, msgpackify
 
 from .cache import (
     delete_cache,
