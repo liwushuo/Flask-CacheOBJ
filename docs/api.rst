@@ -5,7 +5,7 @@ This part of the documentation covers all interfaces of Flask-CacheOBJ.
 
 .. module:: flask_cacheobj
 
-.. autoclass:: FlaskCacheOBJ
+.. autoclass:: CacheOBJ
    :members:
 
 .. module:: flask_cacheobj.cache

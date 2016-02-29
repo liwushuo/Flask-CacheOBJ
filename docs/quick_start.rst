@@ -15,18 +15,18 @@ or alternatively if you have pip installed::
 Initialize CacheOBJ
 -------------------
 
-Cache is managed through a ``FlaskCacheOBJ`` instance::
+Cache is managed through a ``CacheOBJ`` instance::
 
     from flask import Flask
-    from flask.ext.cacheobj import FlaskCacheOBJ
+    from flask.ext.cacheobj import CacheOBJ
 
     app = Flask(__name__)
-    cache = FlaskCacheOBJ(app)
+    cache = CacheOBJ(app)
 
-You may also set up your ``FlaskCacheOBJ`` instance later at configuration time using
+You may also set up your ``CacheOBJ`` instance later at configuration time using
 **init_app** method::
 
-    cache = FlaskCacheOBJ()
+    cache = CacheOBJ()
 
     app = Flask(__name__)
     cache.init_app(app)
