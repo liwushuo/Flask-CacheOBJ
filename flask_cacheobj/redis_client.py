@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-import sys
-print sys.path
+
 import redis
 
 class RedisClient(object):
