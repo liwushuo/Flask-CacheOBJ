@@ -87,7 +87,12 @@ def cache_obj(cache_key_reg, packer=encode, unpacker=decode):
 
         return r
 
+    deco.cache_key_reg = cache_key_reg
+    deco.packer = packer
+    deco.unpacker = unpacker
+
     return deco
+
 
 def delete_obj(cache_key_reg):
     """Delete object cache
@@ -110,6 +115,10 @@ def delete_obj(cache_key_reg):
         ret = f(*a, **kw)
         mc.delete(key)
         return ret
+
+    deco.cache_key_reg = cache_key_reg
+    deco.packer = None
+    deco.unpacker = None
 
     return deco
 
@@ -163,6 +172,10 @@ def cache_hash(cache_key_reg, packer=encode, unpacker=decode):
         mc.hset(hash_key, key, packer(r))
         return r
 
+    deco.cache_key_reg = cache_key_reg
+    deco.packer = packer
+    deco.unpacker = unpacker
+
     return deco
 
 
@@ -179,7 +192,7 @@ def hash_del(cache_key_reg, **kw):
     mc.hdel(hash_key, key)
 
 
-def cache_list(cache_key_reg):
+def cache_list(cache_key_reg, packer=str, unpacker=int):
     @decorator
     def deco(f, *a, **kw):
         key_pattern = cache_key_reg.get('key')
@@ -195,18 +208,22 @@ def cache_list(cache_key_reg):
         if isinstance(key, text_type):
             key = key.encode("utf8")
         r = mc.smembers(key)
-        r = [int(rv) for rv in r]
+        r = [unpacker(rv) for rv in r]
 
         # set cache
         if not r:
             r = f(*a, **kw)
             if r:
                 mc.delete(key)
-                mc.sadd(key, *r)
+                mc.sadd(key, *map(packer, r))
         else:
             logger.info('Cache read - %s', key)
 
         return r
+
+    deco.cache_key_reg = cache_key_reg
+    deco.unpacker = unpacker
+    deco.packer = packer
 
     return deco
 
@@ -267,7 +284,7 @@ def set_len(cache_key_reg, **kw):
     return mc.scard(key)
 
 
-def cache_counter(cache_key_reg):
+def cache_counter(cache_key_reg, packer=str, unpacker=int):
     """A decorator that can cache counter function result.
 
     Example::
@@ -299,11 +316,15 @@ def cache_counter(cache_key_reg):
             if r is not None:
                 if not isinstance(r, integer_types):
                     raise Exception("Only support cache counters!")
-                mc.set(key, r, expire)
+                mc.set(key, packer(r), expire)
         else:
             logger.info('Counter cache read - %s', key)
 
-        return int(r)
+        return unpacker(r)
+
+    deco.cache_key_reg = cache_key_reg
+    deco.packer = packer
+    deco.unpacker = unpacker
 
     return deco
 
