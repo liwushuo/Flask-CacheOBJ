@@ -355,3 +355,7 @@ def set_counter(cache_key_reg, value=0, **kw):
     key = format_key_pattern(key_pattern, **kw)
 
     return mc.set(key, value)
+
+def reset_counter(cache_key_reg, **kw):
+    """Reset counter value, alias for set_counter(cache_key_reg, 0, **kw)"""
+    return set_counter(cache_key_reg, 0, **kw)
