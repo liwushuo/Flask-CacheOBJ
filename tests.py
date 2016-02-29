@@ -42,6 +42,7 @@ def test_cache_obj(cache):
     @cache.obj({'key': 'test_cache_obj:{id}', 'expire': 1})
     def get(id):
         return Obj(id)
+    assert get.cache_key_reg
     assert not cache.mc.get('test_cache_obj:1')
     assert get(1)
     assert cache.mc.get('test_cache_obj:1')
@@ -51,6 +52,7 @@ def test_cache_list(cache):
     @cache.list({'key': 'test_cache_list:{id}', 'expire': 1})
     def get(id):
         return range(id)
+    assert get.cache_key_reg
     assert not cache.mc.smembers('test_cache_list:1')
     assert get(1)
     assert cache.mc.exists('test_cache_list:1')
@@ -60,6 +62,7 @@ def test_cache_hash(cache):
     @cache.hash({'key': '{id}', 'hash_key': 'item', 'expire': 1})
     def get(id):
         return Obj(1)
+    assert get.cache_key_reg
     assert not cache.mc.hget('item', '1')
     assert get(1)
     assert cache.mc.hget('item', '1')
@@ -83,6 +86,7 @@ def test_cache_delete(cache):
     def update(id):
         return int(id)
     get(1)
+    assert get.cache_key_reg
     assert int(cache.mc.get('test_cache_counter:1'))
     assert update(1)
     assert not cache.mc.get('test_cache_counter:1')
