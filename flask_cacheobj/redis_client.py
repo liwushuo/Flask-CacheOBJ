@@ -46,8 +46,12 @@ class RedisClient(object):
     def incr(self, key, delta=1):
         return self._client.incr(self._make_key(key), delta)
 
+    inc = incr
+
     def decr(self, key, delta=1):
         return self._client.decr(self._make_key(key), delta)
+
+    dec = decr
 
     def bulk_delete(self, pattern):
         keys = self._client.keys(self._make_key(pattern))
