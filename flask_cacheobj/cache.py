@@ -14,6 +14,7 @@ import logging
 from functools import wraps
 
 import msgpack
+from redis.exceptions import ConnectionError
 from decorator import decorator, decorate
 
 from .msgpackable import encode, decode
@@ -75,7 +76,11 @@ def cache_obj(cache_key_reg, packer=encode, unpacker=decode):
             return f(*a, **kw)
         if isinstance(key, text_type):
             key = key.encode("utf8")
-        r = mc.get(key)
+
+        try:
+            r = mc.get(key)
+        except ConnectionError:
+            return f(*a, **kw)
 
         r = unpacker(r) if r else None
 
@@ -164,7 +169,12 @@ def cache_hash(cache_key_reg, packer=encode, unpacker=decode):
             return f(*a, **kw)
         if isinstance(key, text_type):
             key = key.encode('utf8')
-        r = mc.hget(hash_key, key)
+
+        try:
+            r = mc.hget(hash_key, key)
+        except ConnectionError:
+            return f(*a, **kw)
+
         if r is not None:
             logger.info('HashCache read - %s - %s', hash_key, key)
             return unpacker(r) if r else None
@@ -211,7 +221,12 @@ def cache_list(cache_key_reg, packer=str, unpacker=int):
             return f(*a, **kw)
         if isinstance(key, text_type):
             key = key.encode("utf8")
-        r = mc.smembers(key)
+
+        try:
+            r = mc.smembers(key)
+        except ConnectionError:
+            return f(*a, **kw)
+
         r = [unpacker(rv) for rv in r]
 
         # set cache
@@ -315,7 +330,11 @@ def cache_counter(cache_key_reg, packer=str, unpacker=int):
             return f(*a, **kw)
         if isinstance(key, text_type):
             key = key.encode("utf8")
-        r = mc.get(key)
+
+        try:
+            r = mc.get(key)
+        except ConnectionError:
+            return f(*a, **kw)
 
         if r is None:
             r = f(*a, **kw)
