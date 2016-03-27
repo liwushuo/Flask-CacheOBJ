@@ -139,7 +139,9 @@ def delete_cache(cache_key_reg, **kw):
     """
     key_pattern = cache_key_reg.get('key')
     key = format_key_pattern(key_pattern, **kw)
-
+    key = key.replace(' ', '_')
+    if isinstance(key, text_type):
+        key = key.encode("utf8")
     mc.delete(key)
     logger.info('Cache delete - %s', key)
 
