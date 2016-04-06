@@ -367,7 +367,7 @@ def inc_counter(cache_key_reg, delta=1, **kw):
     key_pattern = cache_key_reg.get('key')
     key = format_key_pattern(key_pattern, **kw)
 
-    mc.incr(key, delta)
+    return int(mc.incr(key, delta) or 0)
 
 
 def dec_counter(cache_key_reg, delta=1, **kw):
@@ -380,7 +380,7 @@ def dec_counter(cache_key_reg, delta=1, **kw):
     key_pattern = cache_key_reg.get('key')
     key = format_key_pattern(key_pattern, **kw)
 
-    mc.decr(key, delta)
+    return int(mc.decr(key, delta) or 0)
 
 
 def get_counter(cache_key_reg, **kw):
